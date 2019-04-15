@@ -1,6 +1,8 @@
 .Task {
     width: 100%;
     background-color: #fff;
+    box-shadow: 0 3px 7px 0 rgba(110, 142, 247, 0.13);
+    border: 1px solid #E1E2E8;
     border-radius: 3px;
     padding: 15px 10px;
     display: flex;
@@ -19,7 +21,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: rgba(33, 33, 33, 0.3);
+        background-color: rgba(247, 248, 254, 0.5);
         width: 100vw;
         height: 100vh;
     }
@@ -36,8 +38,11 @@
         z-index: 99;
         i {
             cursor: pointer;
-            color: #fff;
+            color: #666666;
             margin-left: 5px;
+            &:first-child {
+                color: #00DF82;
+            }
         }
     }
     &__content {
@@ -51,5 +56,11 @@
     &__btn {
         margin: 0 5px;
         cursor: pointer;
+        &:first-child {
+            color: #5680f9;
+        }
+        &:nth-child(2) {
+            color: #FF2F2F;
+        }
     }
 }

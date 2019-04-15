@@ -3,6 +3,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import uuidv1 from 'uuid/v1';
 import { fromJS } from 'immutable'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 import './style.scss';
 import Column from './components/Column/';
@@ -18,10 +19,17 @@ class App extends Component {
         editedTaskIndex: null,
         editedTaskId: null,
         columns: fromJS([
-            { id: 'td', title: 'TO DO', tasks: [{id: 'abc', content: 'aaaa'}] },
+            { id: 'td', title: 'TO DO', tasks: [] },
             { id: 'ip', title: 'IN PROGRESS', tasks: [] },
             { id: 'de', title: 'DONE', tasks: [] }
         ])
+    }
+
+    componentDidMount() {
+        const columns = localStorage.getItem('columns');
+        if (columns) {
+            this.setState({ columns: fromJS(JSON.parse(columns)) });
+        }
     }
 
     handleToggleModal = (choosenColumn = '') => () => {
@@ -31,10 +39,7 @@ class App extends Component {
         }));
     }
 
-    handleChangeTaskContent = (e) => {
-        console.log(e.target.value);
-        this.setState({ taskContent: e.target.value })
-    }
+    handleChangeTaskContent = (e) => this.setState({ taskContent: e.target.value })
 
     handleChangeSelectedColumn = (selectedColumn) => () => this.setState({ selectedColumn: selectedColumn })
 
@@ -55,6 +60,8 @@ class App extends Component {
                 selectedColumn: '',
                 taskContent: '',
                 columns: fromJS(updatedColumn)
+            }, () => {
+                localStorage.setItem('columns', JSON.stringify(updatedColumn.toJS()));
             });
         }
     }
@@ -67,6 +74,7 @@ class App extends Component {
                 [columnIndex, 'tasks'],
                 tasks => tasks.remove(taskIndex));
             this.setState({ columns: fromJS(updatedColumn) }, () => {
+                localStorage.setItem('columns', JSON.stringify(updatedColumn.toJS()));
                 toastr.success('Delete task success', 'Notice', { timeOut: 2000 });
             });
         }
@@ -96,6 +104,8 @@ class App extends Component {
             editedTaskId: null,
             editedTaskIndex: null,
             columns: fromJS(updatedColumn)
+        }, () => {
+            localStorage.setItem('columns', JSON.stringify(updatedColumn.toJS()));
         });
     }
 
@@ -108,35 +118,73 @@ class App extends Component {
         });
     }
 
+    handleSaveDrag = (result) => {
+        const { source, destination, reason } = result;
+        if (reason === 'DROP' && destination) {
+            const { columns } = this.state;
+            const sourceColumnIndex = columns.findIndex(column => column.get('id') === source.droppableId);
+            const task = columns.getIn([sourceColumnIndex, 'tasks', source.index]);
+            let updatedColumn = columns.updateIn(
+                [sourceColumnIndex, 'tasks'],
+                tasks => tasks.remove(source.index)
+            );
+            const destinationColumnIndex = columns.findIndex(column => column.get('id') === destination.droppableId);
+            updatedColumn = updatedColumn.updateIn(
+                [destinationColumnIndex, 'tasks'],
+                tasks => tasks.insert(destination.index, task)
+            );
+            this.setState({
+                columns: fromJS(updatedColumn)
+            }, () => {
+                localStorage.setItem('columns', JSON.stringify(updatedColumn.toJS()));
+            });
+        }
+    }
+
     render() {
         const { columns, displayModal, selectedColumn, taskContent, editedTaskId } = this.state;
 
         return (
             <div className="App">
                 <h1 className="App__title">TO DO LIST</h1>
-                <div className="App__content">
-                    {
-                        columns.map((column, columnIndex) => (
-                            <Column key={column.get('id')}
-                                column={column}
-                                handleAddNewTask={this.handleToggleModal}
-                            >
-                                {
-                                    column.get('tasks').map((task, taskIndex) => (
-                                        <Task key={task.get('id')}
-                                            isEditing={task.get('id') === editedTaskId}
-                                            handleChangeTaskContent={this.handleChangeTaskContent}
-                                            task={task}
-                                            handleEdit={this.handleEdit}
-                                            handleCancelEdit={this.handleCancelEdit}
-                                            handleChooseEditTask={this.handleChooseEditTask(columnIndex, taskIndex)}
-                                            handleDeleteTask={this.handleDeleteTask(columnIndex, taskIndex)} />
-                                    ))
-                                }
-                            </Column>
-                        ))
-                    }
-                </div>
+                <DragDropContext onDragEnd={this.handleSaveDrag}>
+                    <div className="App__content">
+                        {
+                            columns.map((column, columnIndex) => (
+                                <Column key={column.get('id')}
+                                    column={column}
+                                    handleAddNewTask={this.handleToggleModal}
+                                >
+                                    <Droppable droppableId={column.get('id')}>
+                                        {
+                                            provided => (
+                                                <div ref={provided.innerRef}
+                                                    {...provided.droppableProps}
+                                                    style={{ minHeight: '300px' }}
+                                                >
+                                                    {
+                                                        column.get('tasks').map((task, taskIndex) => (
+                                                            <Task key={task.get('id')}
+                                                                index={taskIndex}
+                                                                isEditing={task.get('id') === editedTaskId}
+                                                                handleChangeTaskContent={this.handleChangeTaskContent}
+                                                                task={task}
+                                                                handleEdit={this.handleEdit}
+                                                                handleCancelEdit={this.handleCancelEdit}
+                                                                handleChooseEditTask={this.handleChooseEditTask(columnIndex, taskIndex)}
+                                                                handleDeleteTask={this.handleDeleteTask(columnIndex, taskIndex)} />
+                                                        ))
+                                                    }
+                                                    {provided.placeholder}
+                                                </div>
+                                            )
+                                        }
+                                    </Droppable>
+                                </Column>
+                            ))
+                        }
+                    </div>
+                </DragDropContext>
                 {
                     displayModal &&
                     <AddNewModal selectedColumn={selectedColumn}

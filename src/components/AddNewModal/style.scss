@@ -7,6 +7,7 @@
     align-items: center;
     top: 0;
     left: 0;
+    border: 1px solid #5680f9;
     &__backdrop {
         position: absolute;
         width: 100%;
@@ -29,6 +30,7 @@
         line-height: 30px;
         box-sizing: border-box;
         border-bottom: 1px solid #ccc;
+        color: #5680f9;
     }
     &__task-status {
         margin-top: 20px;
@@ -56,21 +58,23 @@
         text-align: right;
     }
     &__btn {
-        background-color: #fff;
         border: 1px solid transparent;
         width: 70px;
         box-sizing: border-box;
         line-height: 25px;
         margin: 0 7px;
         border-radius: 3px;
+        font-size: 15px;
         cursor: pointer;
         &--confirm {
-            background-color: green;
+            background-color: #5680f9;
             color: #fff;
-            border-color: green;
+            border-color: #5680f9;
         }
         &--cancel {
-            border-color: #ccc;
+            background-color: #fff;
+            border-color: #666A95;
+            color: #666A95;
         }
     }
     &__btn:last-child {
