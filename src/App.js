@@ -51,7 +51,8 @@ class App extends Component {
             const { selectedColumn, columns } = this.state;
             const newTask = fromJS({
                 id: uuidv1(),
-                content: taskContent
+                content: taskContent,
+                time: new Date().toLocaleString()
             });
             const columnIndex = columns.findIndex(column => column.get('id') === selectedColumn);
             const updatedColumn = columns.updateIn([columnIndex, 'tasks'], tasks => tasks.push(newTask));
