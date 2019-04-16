@@ -2,7 +2,7 @@ import React from 'react';
 
 import './style.scss';
 
-const AddNewModal = (props) => (
+const AddNewModal = () => (
     <div className="AddNewModal">
         <div className="AddNewModal__backdrop"></div>
         <div className="AddNewModal__content">
@@ -11,40 +11,28 @@ const AddNewModal = (props) => (
             </h4>
             <div className="AddNewModal__task-status">
                 <span className="AddNewModal__radio">
-                    <input type="radio"
-                        checked={props.selectedColumn === 'td'}
-                        onChange={props.handleChangeSelectedColumn('td')} />
+                    <input type="radio" />
                     <span>TODO</span>
                 </span>
                 <span className="AddNewModal__radio">
-                    <input type="radio"
-                        checked={props.selectedColumn === 'ip'}
-                        onChange={props.handleChangeSelectedColumn('ip')} />
+                    <input type="radio" />
                     <span>IN PROGRESS</span>
                 </span>
                 <span className="AddNewModal__radio">
-                    <input type="radio"
-                        checked={props.selectedColumn === 'de'}
-                        onChange={props.handleChangeSelectedColumn('de')} />
+                    <input type="radio" />
                     <span>DONE</span>
                 </span>
             </div>
             <div className="AddNewModal__task">
                 <input className="AddNewModal__input"
                     type="text"
-                    placeholder="Enter your task..."
-                    value={props.taskContent}
-                    onChange={props.handleChangeTaskContent} />
+                    placeholder="Enter your task..." />
             </div>
             <div className="AddNewModal__action">
-                <button className="AddNewModal__btn AddNewModal__btn--confirm"
-                    onClick={props.handleAddNewTask}
-                >
+                <button className="AddNewModal__btn AddNewModal__btn--confirm">
                     Save
                 </button>
-                <button className="AddNewModal__btn AddNewModal__btn--cancel"
-                    onClick={props.handleToggleModal}
-                >
+                <button className="AddNewModal__btn AddNewModal__btn--cancel">
                     Cancel
                 </button>
             </div>
