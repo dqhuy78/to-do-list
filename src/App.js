@@ -89,6 +89,10 @@ class App extends Component {
         })
     }
 
+    handleChangeSelectedColumn = (selectedColumn) => () => {
+        this.setState({ selectedColumn: selectedColumn })
+    }
+
     handleEdit = () => {
         const { columns, editingColumnIndex, taskContent, editingTaskIndex } = this.state;
         const updatedColumn = columns.updateIn(
@@ -189,7 +193,9 @@ class App extends Component {
                         handleChangeTaskContent={this.handleChangeTaskContent}
                         handleChangeeditingColumnIndex={this.handleChangeeditingColumnIndex}
                         handleAddNewTask={this.handleAddNewTask}
-                        handleToggleModal={this.handleToggleModal()} />
+                        handleToggleModal={this.handleToggleModal()}
+                        selectedColumn={this.state.selectedColumn}
+                        handleChangeSelectedColumn={this.handleChangeSelectedColumn} />
                 }
             </div>
         );
